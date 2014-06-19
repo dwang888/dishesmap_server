@@ -1,0 +1,67 @@
+<project name="GoodFood" default="resolve" xmlns:ivy="antlib:org.apache.ivy.ant">
+    <!-- some variables used -->
+    <property name="lib.dir" value="lib" />
+    <property name="build.dir" value="bin" />
+    <property name="src.dir" value="src" />
+    
+    <!-- paths used for compilation and run  -->
+    <path id="lib.path.id">
+        <fileset dir="${lib.dir}" />
+	</path>
+    <path id="run.path.id">
+        <path refid="lib.path.id" />
+        <path location="${build.dir}" />
+    </path>
+	<path id="src.path.id">
+        <path refid="lib.path.id" />
+        <path location="${src.dir}" />
+    </path>
+    
+    <!-- ================================= 
+          target: resolve              
+         ================================= -->
+    <target name="resolve" description="--> retreive dependencies with ivy">
+		<ivy:resolve file="ivy.xml" conf="*" />  
+        <ivy:retrieve pattern="lib/[conf]/[artifact]-[type]-[revision].[ext]" />
+    </target>
+	
+	 <!-- ================================= 
+	          target: compile              
+	         ================================= -->
+	    <target name="compile" depends="resolve" description="--> compile">
+	        <ivy:report todir="${build.dir}"/>
+	    </target>
+
+	
+    <!-- ================================= 
+          target: report              
+         ================================= -->
+    <target name="report" depends="resolve" description="--> generates a report of dependencies">
+        <ivy:report />
+    </target>
+
+
+    <!-- ================================= 
+          target: clean              
+         ================================= -->
+    <target name="clean" description="--> clean the project">
+        <delete includeemptydirs="true">
+            <fileset dir="${basedir}">
+            	<exclude name="src/**" />
+            	<exclude name="etc/**" />
+            	<exclude name="data/**" />
+            	<exclude name="build.xml" />
+            	<exclude name="ivy.xml" />
+            	<exclude name=".project" />
+            	<exclude name=".gitignore" />         	
+        	</fileset>
+    	</delete>
+    </target>
+	
+    <!-- ================================= 
+          target: clean-cache              
+         ================================= -->
+	<target name="clean-cache" description="--> clean the ivy cache">
+		<ivy:cleancache />
+	</target>
+</project>

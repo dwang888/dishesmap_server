@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<!DOCTYPE Configure PUBLIC "-//Jetty//Configure//EN" "http://www.eclipse.org/jetty/configure.dtd">
+ 
+<Configure id="GoodFoodServer" class="org.eclipse.jetty.server.Server">
+        
+    <Call name="addConnector">
+      <Arg>
+          <New class="org.eclipse.jetty.server.nio.SelectChannelConnector">
+          	<Set name="host">127.0.0.1</Set>
+            <Set name="port">8080</Set>            
+            <Set name="maxIdleTime">300000</Set>  
+            <Set name="lowResourcesMaxIdleTime">5000</Set>         
+          </New>
+      </Arg>
+    </Call>
+ 
+ 	<Set name="ThreadPool">
+	 <New class="org.eclipse.jetty.util.thread.QueuedThreadPool">
+	    <Set name="minThreads">10</Set>
+	    <Set name="maxThreads">200</Set>
+	    <Set name="lowThreads">20</Set>
+	    <Set name="SpawnOrShrinkAt">2</Set>
+	 </New>
+	</Set>
+ 
+ 	<New id="context" class="org.eclipse.jetty.servlet.ServletContextHandler">
+	    <Set name="contextPath">/</Set>
+	    <Call name="addServlet">
+	      <Arg>wd.goodFood.serverSide.GoodFoodServlet</Arg>
+	      <Arg>/</Arg>
+	    </Call>
+	</New>
+ 
+	<Set name="handler">
+	    <New class="org.eclipse.jetty.server.handler.HandlerCollection">
+	      <Set name="handlers">
+	        <Array type="org.eclipse.jetty.server.Handler">
+	          <Item>
+	            <Ref refid="context" />
+	          </Item>
+	          <Item>
+	            <New class="org.eclipse.jetty.server.handler.DefaultHandler" />
+	          </Item>
+	        </Array>
+	      </Set>
+	    </New>
+	</Set>
+ 
+    <New id="DSDB" class="org.eclipse.jetty.plus.naming.Resource">
+		<Arg>jdbc/DSDB</Arg>
+        <Arg>
+             <New class="org.apache.commons.dbcp.BasicDataSource">
+                <Set name="driverClassName">com.mysql.jdbc.Driver</Set>
+                <Set name="url">jdbc:mysql://199.168.136.80:3306/goodfoodDB</Set>
+                <Set name="username">lingandcs</Set>
+                <Set name="password">sduonline</Set>
+                <Set name="maxActive" type="int">100</Set>
+                <Set name="maxIdle" type="int">30</Set>
+                <Set name="maxWait" type="int">1000</Set>
+                <Set name="name">DSDB</Set>
+                <Set name="defaultAutoCommit" type="boolean">true</Set>
+                <Set name="removeAbandoned" type="boolean">true</Set>
+                <Set name="removeAbandonedTimeout" type="int">60</Set>
+                <Set name="logAbandoned" type="boolean">true</Set>
+             </New>
+        </Arg>
+	</New>
+    
+    <Set name="stopAtShutdown">true</Set>
+ 
+    <!-- send the server version in the response header? -->
+    <Set name="sendServerVersion">false</Set>
+ 
+    <!-- send the date header in the response header? -->
+    <Set name="sendDateHeader">false</Set>
+ 
+    <!-- allows requests(prior to shutdown) to finish gracefully -->
+    <Set name="gracefulShutdown">1000</Set>
+</Configure>
