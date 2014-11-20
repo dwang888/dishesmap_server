@@ -41,19 +41,19 @@ public class DataImporter {
 	static final String USER = "lingandcs";
 	static final String PASS = "sduonline";
 	
-	String SELECT_biz = "SELECT * FROM goodfoodDB.goodfood_biz";
+	String SELECT_biz = "SELECT * FROM goodfoodDB.goodfood_biz_Google";
 	TransportClient client;
 	
 	public DataImporter(){
 		Settings settings = ImmutableSettings.settingsBuilder()
-		        .put("cluster.name", "ES_cluster_dishesmap")
+		        .put("cluster.name", "elasticsearch")
 		        .build();
 		this.client = new TransportClient(settings);
         
 		client.addTransportAddress(new InetSocketTransportAddress("107.170.18.102", 9300));
 	}
 	
-	public List<Business> fetchAllPlacesFromDB(){
+	public List<Business> fetchAllPlacesFromDB2SearchEngine(){
 		//use json here; an xml based version may be needed
 //		System.out.println(lat);
 		long startTime = System.currentTimeMillis();
@@ -77,6 +77,8 @@ public class DataImporter {
 //			ResultSet result = psSelectBiz.executeQuery();
 			System.out.println("querying...");
 			ResultSet rs = stmt.executeQuery(this.SELECT_biz);
+			int count = 0;
+			
 			while(rs.next()){
 //				System.out.println("a record");
 				int id = rs.getInt("id");
@@ -115,17 +117,21 @@ public class DataImporter {
 					        .field("updateTime", updateTimeFormatted)				        
 					    .endObject();
 				String json = builder.string();
-//				System.out.println(json);				
+				System.out.println(json);				
 				IndexResponse response = client.prepareIndex("goodfood", "goodfood_biz", String.valueOf(id+625187))
 				        .setSource(json)
 				        .execute()
 				        .actionGet();
-				System.out.println(response.getIndex() + "\t" + 
-				        response.getId() + "\t" + 
-						response.getType() + "\t" + 
-				        response.getVersion() + 
-						"\t" + response.getHeaders());
+//				System.out.println(response.getIndex() + "\t" + 
+//				        response.getId() + "\t" + 
+//						response.getType() + "\t" + 
+//				        response.getVersion() + 
+//						"\t" + response.getHeaders());
 //				Thread.sleep(1000);
+				count++;
+				if(count%1000 == 0){
+					System.out.println(count + "\t records loaded to ES");
+				}
 			}
 			
 
@@ -143,6 +149,7 @@ public class DataImporter {
 			DBConnector.close(psSelectBiz);
 			DBConnector.close(psInsertBiz);
 			
+			client.close();
 		}		
 		
 		long endTime = System.currentTimeMillis();
@@ -160,7 +167,7 @@ public class DataImporter {
 		DataImporter tester = new DataImporter();
 //		tester.getFromES();
 //		tester.indexDoc();
-		tester.fetchAllPlacesFromDB();
+		tester.fetchAllPlacesFromDB2SearchEngine();
 	}
 
 }

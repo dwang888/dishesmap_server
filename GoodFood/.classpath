@@ -74,37 +74,6 @@
 	<classpathentry kind="lib" path="lib/default/xmlunit-jar-1.2.jar"/>
 	<classpathentry kind="lib" path="lib/default/xpp3-jar-1.1.3.4.O.jar"/>
 	<classpathentry kind="lib" path="lib/default/xstream-jar-1.4.2.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-ajp-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-annotations-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-client-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-continuation-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-deploy-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-http-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-io-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-jmx-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-jndi-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-overlay-deployer-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-plus-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-policy-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-rewrite-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-security-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-server-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-servlet-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-servlets-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-util-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-webapp-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-websocket-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/jetty-xml-8.1.8.v20121106.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/misc/jetty/jetty8/jetty-distribution-8.1.8.v20121106/lib/servlet-api-3.0.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/joda-time.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/joda-time-2.1-sources.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/jollyday.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/jollyday-0.4.7-sources.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/stanford-corenlp-1.3.5.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/stanford-corenlp-1.3.5-javadoc.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/stanford-corenlp-1.3.5-models.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/stanford-corenlp-1.3.5-sources.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/sys/stanfordNLP/stanford-corenlp-full-2013-04-04/xom.jar"/>
 	<classpathentry kind="lib" path="lib/default/commons-dbcp-jar-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/default/commons-dbcp-javadoc-1.4.jar"/>
 	<classpathentry kind="lib" path="lib/default/commons-dbcp-source-1.4.jar"/>
@@ -124,7 +93,55 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/default/json-lib-2.4-jdk15.jar"/>
-	<classpathentry kind="lib" path="D:/NLP_TOOLS/IR/ES/elasticsearch-1.1.1/lib/elasticsearch-1.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/default/lucene-core-4.8.1.jar"/>
+	<classpathentry kind="lib" path="lib/default/elasticsearch-1.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/default/gson-2.2.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-ajp-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-annotations-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-client-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-continuation-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-continuation-jar-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-deploy-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-http-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-http-jar-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-io-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-io-jar-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-jmx-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-jmx-jar-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-jndi-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-overlay-deployer-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-plus-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-policy-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-rewrite-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-security-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-server-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-server-jar-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-server-javadoc-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-server-source-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-servlet-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-servlets-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-util-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-util-jar-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-webapp-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-websocket-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/jetty-xml-8.1.8.v20121106.jar"/>
+	<classpathentry kind="lib" path="lib/default/joda-time-2.1-sources.jar"/>
+	<classpathentry kind="lib" path="lib/default/joda-time.jar"/>
+	<classpathentry kind="lib" path="lib/default/jollyday-0.4.7-sources.jar"/>
+	<classpathentry kind="lib" path="lib/default/jollyday.jar"/>
+	<classpathentry kind="lib" path="lib/default/lucene-core-3.6.2.jar"/>
+	<classpathentry kind="lib" path="lib/default/lucene-core-4.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/default/lucene-core-4.2.1.jar"/>
+	<classpathentry kind="lib" path="lib/default/servlet-api-3.0.jar"/>
+	<classpathentry kind="lib" path="lib/default/xom.jar"/>
+	<classpathentry kind="lib" path="lib/json-lib-2.4-jdk15.jar"/>
+	<classpathentry kind="lib" path="lib/default/ejml-0.23.jar"/>
+	<classpathentry kind="lib" path="lib/default/javax.json-api-1.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/default/javax.json.jar"/>
+	<classpathentry kind="lib" path="lib/default/stanford-corenlp-3.4-javadoc.jar"/>
+	<classpathentry kind="lib" path="lib/default/stanford-corenlp-3.4-models.jar"/>
+	<classpathentry kind="lib" path="lib/default/stanford-corenlp-3.4-sources.jar"/>
+	<classpathentry kind="lib" path="lib/default/stanford-corenlp-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/default/xom-1.2.10-src.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -1,6 +1,7 @@
 package wd.goodFood.entity;
 
 import java.util.LinkedList;
+import java.util.UUID;
 import java.util.List;
 
 public class Food {
@@ -10,15 +11,17 @@ public class Food {
 	private List<Review> reviewsGood;
 	private List<Review> reviewsBad;
 	private List<Review> reviewsUnknown;
+//	private String id;//a unique id; TODO: universal or local unique?
 	
 	public Food(){
 		this.setReviewsGood(new LinkedList<Review>());
-		
+//		this.id = UUID.randomUUID().toString().substring(0, 8);
 	}
 	
 	public Food(String text){
 		this.setFoodText(text);
 		this.setReviewsGood(new LinkedList<Review>());
+//		this.id = UUID.randomUUID().toString().substring(0, 8);
 	}
 	
 //	public Food(String text, List<Review> reviews){
@@ -74,6 +77,7 @@ public class Food {
 	public void setReviewsUnknown(List<Review> reviewsUnknown) {
 		this.reviewsUnknown = reviewsUnknown;
 	}
+
 
 
 	public static void main(String[] args) {

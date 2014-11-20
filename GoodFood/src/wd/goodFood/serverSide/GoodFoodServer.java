@@ -25,11 +25,11 @@ public class GoodFoodServer {
 		this.config = new Configuration(pathConfig);				
 		this.server = new Server();
 
-		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);	
-		context.setContextPath("/");
-		server.setHandler(context);
+		ServletContextHandler contextHandler = new ServletContextHandler(ServletContextHandler.SESSIONS);	
+		contextHandler.setContextPath("/");
+		server.setHandler(contextHandler);
 		
-		context.addServlet(new ServletHolder(new GoodFoodServlet()),"/*");	
+		contextHandler.addServlet(new ServletHolder(new GoodFoodServlet()),"/*");	
         
         SelectChannelConnector connector = new SelectChannelConnector();
         connector.setUseDirectBuffers(false);

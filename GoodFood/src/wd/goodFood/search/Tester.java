@@ -41,19 +41,23 @@ public class Tester {
 		
 		
 		Settings settings = ImmutableSettings.settingsBuilder()
-			        .put("cluster.name", "ES_cluster_dishesmap")
+			        .put("cluster.name", "elasticsearch")
 			        .build();
 		client = new TransportClient(settings);
-	        
+//		client = new TransportClient();
+		System.out.println("adding hostname and port");
 		client.addTransportAddress(new InetSocketTransportAddress("107.170.18.102", 9300));
-		System.out.println("client is " +  client.toString());
 		
+		
+		
+		System.out.println("client is " +  client.settings().toString());
 		SearchResponse response = client.prepareSearch("goodfood")
 		        .setTypes("goodfood_biz")
 		        .setSearchType(SearchType.QUERY_AND_FETCH)
-		        .setQuery(QueryBuilders.termQuery("bizName", "laobeifang"))             // Query
+//		        .setQuery(QueryBuilders.termQuery("bizName", "laobeifang"))             // Query
+		        .setQuery(QueryBuilders.termQuery("user", "kimchy"))             // Query
 //		        .setPostFilter(FilterBuilders.rangeFilter("age").from(12).to(18))   // Filter
-		        .setFrom(0).setSize(60).setExplain(true)
+//		        .setFrom(0).setSize(60).setExplain(true)
 		        .execute()
 		        .actionGet();
 		SearchHit[] results = response.getHits().getHits();
@@ -70,7 +74,7 @@ public class Tester {
 	public void searchViaJson(){
 		StringBuilder sb = new StringBuilder();  
 
-		String urlStr = "http://107.170.18.102:9200/goodfood/goodfood_biz/_search?pretty=true";
+		String urlStr = "http://107.170.18.102:9200/goodfood/goodfood_biz/_search";
 		System.out.println(urlStr);
 		XContentBuilder builder;
 		try {
@@ -191,8 +195,8 @@ public class Tester {
 		// TODO Auto-generated method stub
 		Tester tester = new Tester();
 		System.out.println("Hello world" + tester.getClass());
-//		tester.searchES();
-		tester.searchViaJson();
+		tester.searchES();
+//		tester.searchViaJson();
 	}
 
 }

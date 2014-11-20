@@ -1,29 +1,15 @@
 package wd.goodFood.serverSide;
 
 import java.util.logging.Logger;
-import java.io.File;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang.StringEscapeUtils;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.handler.ContextHandler;
-import org.eclipse.jetty.server.handler.HandlerCollection;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
-import org.eclipse.jetty.servlet.ServletHandler;
-import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.resource.Resource;
-import org.eclipse.jetty.plus.jndi.*;
-import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.eclipse.jetty.xml.XmlConfiguration;
 
-import wd.goodFood.utils.Configuration;
-
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class GoodFoodXMLServer {
-	private Configuration config;
+//	private Configuration config;
 	private Server server;
 	Resource server_xml;
 	XmlConfiguration configuration;

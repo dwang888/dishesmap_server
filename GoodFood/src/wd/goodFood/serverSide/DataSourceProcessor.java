@@ -19,6 +19,7 @@ import com.google.gson.JsonObject;
 
 public class DataSourceProcessor implements InfoProcessor{
 
+	private String dbTableName = "";
 //	/**
 //	 * add info from Json to Biz obj
 //	 * */
@@ -218,6 +219,13 @@ public class DataSourceProcessor implements InfoProcessor{
 		}		
 	}
 	
+	public List<Business> addDBTableName(List<Business> bizs){
+		for(Business biz : bizs){
+			biz.setBusiness_id(this.dbTableName + "__" + biz.getBusiness_id());
+		}
+		return bizs;
+	}
+	
 //	/**
 //	 * remove the strang symbols and normalize address string
 //	 * */
@@ -258,5 +266,6 @@ public class DataSourceProcessor implements InfoProcessor{
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

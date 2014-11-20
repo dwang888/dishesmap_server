@@ -1,9 +1,10 @@
 package wd.goodFood.serverSide;
-//just for caching purpose
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.io.Reader;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
@@ -39,7 +40,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.stream.JsonReader;
 
-public class FourSquareInfoProcessor extends DataSourceProcessor{
+public class SearchEngineInfoProcessor extends DataSourceProcessor{
 	private Configuration config;
 	private static int numBusiness;//how many business results should be returned per request.
 	private String apiPrefixPlace;	
@@ -48,7 +49,6 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 	private String apiSurfixReview;	
 	private JsonParser jsonParser;//should be thread safe
 	private GoodFoodFinder finder;
-	private String dbTableName = "goodfood_biz_FourSquare";
 	
 	String INSERT_biz = "INSERT INTO goodfoodDB.goodfood_biz_FourSquare "
 			+ "(bizName, address, bizSrcID, latitude, longitude, phoneNum, merchantMsg, offer, numReviews, profileLink, bizWebsite, dataSource, updateTime, category) VALUES"
@@ -63,8 +63,9 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 	String SELECT_reviews = "SELECT text,rLink,taggedText,food,dataSource,insertTime FROM goodfoodDB.goodfood_reviews_FourSquare WHERE bizSrcID = ? AND dataSource = ?";
 	String DELETE_reviews = "DELETE FROM goodfoodDB.goodfood_reviews_FourSquare WHERE bizSrcID = ? AND dataSource = ?";
 	
+	String urlES = "http://107.170.18.102:9200/goodfood/goodfood_biz/_search";
 	
-	public  FourSquareInfoProcessor(String configFile, GoodFoodFinder finder) throws Exception{
+	public  SearchEngineInfoProcessor(String configFile, GoodFoodFinder finder) throws Exception{
 		config = new Configuration(configFile);
 		this.setFinder(finder);
 		this.numBusiness = Integer.parseInt(config.getValue("numBusiness_FourSquare"));
@@ -75,7 +76,7 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 	}
 
 	@Deprecated
-	public  FourSquareInfoProcessor(String configFile) throws Exception{
+	public  SearchEngineInfoProcessor(String configFile) throws Exception{
 		config = new Configuration(configFile);
 		this.numBusiness = Integer.parseInt(config.getValue("numBusiness_FourSquare"));
 		this.apiPrefixPlace = config.getValue("apiPrefixPlace_FourSquare");
@@ -113,127 +114,149 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 	public Business addInfo2Biz(JsonObject jobj, Business biz){
 		JsonElement eTmp = null;
 		JsonObject oTmp = null;
-			
-		biz.setBusiness_id(jobj.get("id").getAsString().trim());//pure biz id
-//		biz.setBusiness_id(this.dbTableName + "__" + jobj.get("id").getAsString().trim());//use db table name + biz id; globally unique
-		biz.setBusiness_name(jobj.get("name").getAsString().trim());
+//		System.out.println(jobj);
+		biz.setBusiness_id(jobj.get("bizSrcID").getAsString().trim());
+		biz.setBusiness_name(jobj.get("bizName").getAsString().trim());		
 		
-		eTmp = jobj.getAsJsonObject("contact").get("phone");
+		eTmp = jobj.get("phoneNum");
+//		System.out.println(eTmp.getClass());
+		if(eTmp != null)
+			biz.setBusiness_phone(eTmp.toString());
+		
+		biz.setBusiness_address(jobj.get("address").getAsString().trim());
+		
+		eTmp = jobj.get("location");
 		if(eTmp != null){
-			biz.setBusiness_phone(eTmp.getAsString());
-		}
-
-		oTmp = jobj.getAsJsonObject("location");
-		eTmp = oTmp.get("address");
-		biz.setLatitude(oTmp.get("lat").getAsString());
-		biz.setLongitude(oTmp.get("lng").getAsString());		
-		biz.setBusiness_address(this.extractAddress(oTmp));
-		
-		oTmp = jobj.getAsJsonObject("stats");
-		eTmp = oTmp.get("tipCount");
-		biz.setNumReviews(Integer.parseInt(eTmp.getAsString()));
-//		System.out.println(eTmp.getAsString());
-		
-		oTmp = jobj.getAsJsonObject("description");
-		if(oTmp != null){
-			biz.setBusiness_merchantMsg(oTmp.getAsString());
-		}
-		eTmp = jobj.get("url");
-		if(oTmp != null){
-			biz.setWebsite(jobj.get("url").getAsString());
-			biz.setLink(jobj.get("url").getAsString());
-		}
-		
-		//no such rating in new version foursquare api since 201309
-//		if(jobj.get("rating") != null){
-//			biz.setRating(jobj.get("rating").getAsString());
-//		}
+			String[] latlon = jobj.get("location").getAsString().split(",");
+//			System.out.println(latlon[0]);
+//			System.out.println(latlon[1]);
+			biz.setLatitude(latlon[0]);
+			biz.setLongitude(latlon[1]);
+		}		
 				
-//		oTmp = jobj.getAsJsonObject("categories");
-		JsonArray arrayTmp = jobj.getAsJsonArray("categories");//only consider the first category
-		if(arrayTmp != null && arrayTmp.get(0) != null){
-			String catID = arrayTmp.get(0).getAsJsonObject().get("id").getAsString();
-			biz.setCategory(catID);
-		}
+		biz.setNumReviews(Integer.parseInt(jobj.get("numReviews").getAsString().trim()));
+//		System.out.println(eTmp.getAsString());		
 		
-		biz.setDataSource(2);//TODO:hardcode?	
+		eTmp = jobj.get("merchantMsg");
+		if(eTmp != null)
+			biz.setBusiness_merchantMsg(eTmp.toString());
+		
+		eTmp = jobj.get("bizWebsite");
+		if(eTmp != null)
+			biz.setWebsite(eTmp.toString());
+		
+		eTmp = jobj.get("profileLink");
+		if(eTmp != null)
+			biz.setLink(eTmp.toString());
+		
+		biz.setDataSource(jobj.get("dataSource").getAsInt());//TODO:hardcode?	
+//		System.out.println(biz);
 		return biz;
 	}
 	
+	//fetch restaurants from search engine
 	public List<Business> fetchPlaces(String lat, String lon){
-		//use json here; an xml based version may be needed
-//		System.out.println(lat);
 		long startTime = System.currentTimeMillis();
-		Connection dbconn = null;
-		PreparedStatement psSelectBiz = null;
-		PreparedStatement psInsertBiz = null;
-		String apiStr = this.getApiPrefixPlace() + "&ll=" + lat + "," + lon + "&categoryId=4d4b7105d754a06374d81259";//TODO: sharp the category tree
-		String today = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-		apiStr += "&v=" + today;
+//		System.out.println("fetching places from search engine..." + lat + "\t" + lon);
+//		String jsonStr = "{\"query\":{\"size\" : 10,\"filtered\":{\"query\":{\"match_all\":{}},\"filter\":{\"geo_distance\":" +
+//				"{\"distance\":\"50km\", \"goodfood_biz.location\":{\"lat\":" + lat + "," +
+//				"\"lon\":" + lon + "}}}}}}";
+		String jsonStr = "{\"size\" : " + config.getValue("sizeOfReturn") + "," +
+				"\"query\":{" +
+					"\"filtered\":{" +
+						"\"query\":{" +
+//							"\"field\":{\"dataSource\":2}," + 
+							"\"match_all\":{}" +
+							"}," +
+						"\"filter\":{\"geo_distance\":{" +
+//								"\"from\":\"" + config.getValue("fromDistance") + "km\", " +
+//								"\"to\":\"" + config.getValue("toDistance") + "km\"," +
+								"\"distance\":\"" + config.getValue("toDistance") + "km\"," +
+								"\"dataSource\": 1," +
+								" \"goodfood_biz.location\":{" +
+										"\"lat\":" + lat + "," +
+										"\"lon\":" + lon + 
+						"}}}}}}";
 		
+//		jsonStr = "{" +
+//		"\"query\":{" +
+//			    "\"filtered\" : {" + 
+//	        "\"query\" : {" +
+//	            "\"field\" : { \"dataSource\" : 2 }" +
+//	        "}," +
+//	        "\"filter\" : {" +
+//	            "\"geo_distance\" : {" +
+//	                "\"distance\" : \"2km\"," + 
+//	                "\"pin.location\" : {" +
+//	                    "\"lat\" : " + lat + "," +
+//	                    "\"lon\" : " + lon +
+//	                "}" +
+//	            "}" +
+//	        "}" +
+//	    "}" +
+//	"}" +
+//	"}";
+//		
+//		
+//		jsonStr = "{\"query\" : { \"match_all\" : {}},\"filter\" : {\"geo_distance\" : {\"distance\" : \"10km\"," +
+//				"\"pin.location\" : { \"lat\" : \"40.74\", \"lon\" : \"-73.88\"}}}}";
+		
+		System.out.println(jsonStr);
 		List<Business> bizs = new ArrayList<Business>();
-//		System.out.println("fetching PLACEs from:\t");
-//		System.out.println(apiStr);		
+		
+		URL url;
 		try {
-			dbconn = GoodFoodServlet.DS.getConnection();
-			psSelectBiz = dbconn.prepareStatement(this.SELECT_biz);
-//			psSelectBiz = null;
-			psInsertBiz = dbconn.prepareStatement(this.INSERT_biz);
-//			psInsertBiz = null;
-			URL url = new URL(apiStr);
-			HttpURLConnection urlconn = (HttpURLConnection) url.openConnection();
-			InputStream is = urlconn.getInputStream();	
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+			url = new URL(this.urlES);
+			HttpURLConnection urlconn = (HttpURLConnection) url.openConnection();			
+			urlconn.setRequestMethod("POST");
+			urlconn.setDoOutput(true);
+			urlconn.setDoInput(true);
+			urlconn.setRequestProperty("Content-Type", "application/json");
+			urlconn.connect();
+			OutputStreamWriter out = new OutputStreamWriter(urlconn.getOutputStream());
+			out.write(jsonStr);
+			out.close();
+			int HttpResult =urlconn.getResponseCode();
 			StringBuilder sb = new StringBuilder();
-			String line;
-			while((line = br.readLine()) != null){
-//				System.out.println(line);
-				sb.append(line);
-			}
-			
-//			JsonReader reader = new JsonReader(new InputStreamReader(is));
-//			JsonObject jobj= jsonParser.parse(reader).getAsJsonObject();
-			String objStr = sb.toString();
-//			objStr = objStr.replaceAll("(?<![\"}\\]\\de]),\"", "\",\"");
-			
-//			System.out.println(sb.toString());
-//			System.out.println(objStr);
-			JsonObject jobj= (JsonObject)jsonParser.parse(objStr);
-			
-//			Gson gson = new Gson();
-//			Phone fooFromJson = gson.f.fromJson(jsonString, Phone.class);
-			DBConnector.close(is);
-			br.close();
-//			JsonArray groups = jobj.getAsJsonObject("response").getAsJsonArray("groups");
-//			JsonArray locations = groups.get(0).getAsJsonObject().getAsJsonArray("items");
-			JsonArray locations = jobj.getAsJsonObject("response").getAsJsonArray("venues");
-			System.out.println("number of locations:\t" + locations.size());
-			
-			for(JsonElement location : locations){
-				JsonObject loc = (JsonObject)location;
-				Business biz = new Business();
-				this.addInfo2Biz(loc, biz);
-				if(!this.isBizInDB(biz, dbconn, psSelectBiz)){
-					this.addBiz2DB(biz, dbconn, psInsertBiz);
-				}
-				bizs.add(biz);
-			}			
-			
+			if(HttpResult ==HttpURLConnection.HTTP_OK){  
+		        BufferedReader br = new BufferedReader(new InputStreamReader(  
+		        		urlconn.getInputStream(),"utf-8"));  
+		        String line = null;  
+		        while ((line = br.readLine()) != null) {  
+		            sb.append(line + "\n");  
+		        }  
+		        br.close();  
+
+		        System.out.println(""+sb.toString());
+
+		        JsonParser jsonParser = new JsonParser();
+		        JsonObject jobj= (JsonObject)jsonParser.parse(sb.toString());
+				
+				JsonArray locations = jobj.getAsJsonObject("hits").getAsJsonArray("hits");
+				System.out.println("\nnumber of locations:\t" + locations.size());
+				
+				for(JsonElement location : locations){
+					JsonObject loc = (JsonObject)location;
+					Business biz = new Business();
+					biz = addInfo2Biz(loc.getAsJsonObject("_source"), biz);
+					bizs.add(biz);
+//					System.out.println(biz);
+//					System.out.println(biz);
+				}        
+		    }else{  
+		        System.out.println("error info from ES:\t" + HttpResult);  
+		    }
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} finally {
-			DBConnector.close(dbconn);
-			DBConnector.close(psSelectBiz);
-			DBConnector.close(psInsertBiz);
-			
-		}		
+		}
+		
+//		System.out.println("fetching PLACEs from:\t");
+//		System.out.println(apiStr);	
 		
 		long endTime = System.currentTimeMillis();
-//		System.out.println("time fetch PLACES from API:\t" + (endTime - startTime));
+//		System.out.println("time fetch PLACES from Search Engine:\t" + (endTime - startTime));
 		return bizs;
 	}
 	
@@ -282,7 +305,7 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 			inTable = rs.isAfterLast() == rs.isBeforeFirst()? false : true;
 			if(true == inTable){//check if 30 days ago				
 				Calendar calendar = Calendar.getInstance();
-				calendar.add(Calendar.MONTH, -2);
+				calendar.add(Calendar.MONTH, -100);
 				Timestamp nowNdays = new Timestamp(calendar.getTimeInMillis());	
 				rs.next();
 				Timestamp insertTime = rs.getTimestamp("insertTime");
@@ -309,7 +332,9 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 	 * */
 //	public synchronized List<Business> fetchReviews(List<Business> bizs){
 	public List<Business> fetchReviews(List<Business> bizs){
-		System.out.println(bizs.size() + "\t bizs fetched!");
+//		System.out.println(bizs.size() + "\t bizs fetched!");
+		
+		
 		Connection dbconn = null;
 		PreparedStatement psSelectReview = null;
 		PreparedStatement psLookupReview = null;
@@ -325,6 +350,10 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 //			psDeleteReview = dbconn.prepareStatement(this.DELETE_reviews);
 			
 			for(Business biz : bizs){
+//				System.out.println("\n\n" + biz);
+//				System.out.println(biz.getBusiness_id());
+//				System.out.println(biz.getDataSource());
+				
 				start = System.currentTimeMillis();
 				boolean flag = this.isInReviewTable(biz, dbconn, psSelectReview);
 				end = System.currentTimeMillis();
@@ -335,11 +364,17 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 //					System.out.println("fetch reviews from DB:\t" + (end - start));
 				}else{
 					//no records in DB
-					start = System.currentTimeMillis();
-					this.fetchReviewsFromAPI(biz);
-					this.addReviews2DB(biz, dbconn, psInsertReview);//add to cache
-					end = System.currentTimeMillis();
-//					System.out.println("fetch reviews from API:\t" + (end - start));
+					if(biz.getDataSource() == 2){
+						//only consider FourSquare cases
+						start = System.currentTimeMillis();
+//						System.out.println(biz.getBusiness_id());
+//						System.out.println(biz.getDataSource());
+//						this.fetchReviewsFromAPI(biz);
+//						this.addReviews2DB(biz, dbconn, psInsertReview);//add to cache
+						end = System.currentTimeMillis();
+//						System.out.println("fetch reviews from API:\t" + (end - start));
+					}
+					
 				}			
 			}
 		} catch (SQLException e) {
@@ -354,72 +389,72 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 		return bizs;
 	}
 	
-	public Business fetchReviewsFromAPI(Business biz){
-		long startTime = System.currentTimeMillis();
-		String id = biz.getBusiness_id();
-		String apiStr = this.getApiPrefixReview() + id + this.getApiSurfixReview();
-//		String apiStr = this.getApiPrefixReview() + id + this.getApiSurfixReview() + "&v=20130518";
-		String today = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
-		apiStr += "&v=" + today;
-//		System.out.println(apiStr);
-		long time = 0;
-		int length = 0;
-		try {
-			URL url = new URL(apiStr);
-			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-			InputStream is = conn.getInputStream();
-			BufferedReader br = new BufferedReader(new InputStreamReader(is));
-			StringBuilder sb = new StringBuilder();
-			String line;
-			while((line = br.readLine()) != null){
-				sb.append(line);
-			}
-			String jsonStr = sb.toString();
-			jsonStr = jsonStr.replaceAll("(?<![\"}\\]\\d,(true)(false)]),\"", "\",\"");
-			jsonStr = jsonStr.replaceAll("\",\",\"", "\",\"");
-//			System.out.println(jsonStr);
-			JsonObject jobj= (JsonObject)jsonParser.parse(jsonStr);
-//			JsonReader reader = new JsonReader(new InputStreamReader(is));
-//			JsonObject jobj= jsonParser.parse(reader).getAsJsonObject();
-			is.close();
-			br.close();
-			JsonObject tips = jobj.getAsJsonObject("response").getAsJsonObject("tips");
-			if(tips != null){
-				JsonArray bizReviews = tips.getAsJsonArray("items");
-//				System.out.println(bizReviews.size() + "\t reviews");
-				for(JsonElement jElem : bizReviews){
-					JsonObject robj = (JsonObject) jElem;
-//					String rStr = robj.get("text").toString().trim() + " @ via FourSquare";
-					String rStr = robj.get("text").toString().trim();
-					String rLink = robj.get("canonicalUrl").getAsString().trim();
-					
-					long start = System.currentTimeMillis();
-					Review r = this.getFinder().process(rStr);//call NLP tools
-					long end = System.currentTimeMillis();
-					r.setWebLink(rLink);
-					r.setDataSource(2);//TODO: change hardcode 2?
-					biz.getReviews().add(r);
-					time += (end-start);
-					length += rStr.length();
-//					System.out.println(biz.getReviews().size());
-				}
-//				System.out.println(biz.getReviews().size());
-			}
-//			
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-			return biz;
-		} catch (IOException e) {
-			e.printStackTrace();
-			return biz;
-		}
-		long endTime = System.currentTimeMillis();
-//		System.out.println("---------------->");
-//		System.out.println("length of review:\t" + length);
-//		System.out.println("NER from API:\t" + time);
-//		System.out.println("fetch reviews from API:\t" + (endTime - startTime));
-		return biz;
-	}	
+//	public Business fetchReviewsFromAPI(Business biz){
+//		long startTime = System.currentTimeMillis();
+//		String id = biz.getBusiness_id();
+//		String apiStr = this.getApiPrefixReview() + id + this.getApiSurfixReview();
+////		String apiStr = this.getApiPrefixReview() + id + this.getApiSurfixReview() + "&v=20130518";
+//		String today = new SimpleDateFormat("yyyyMMdd").format(Calendar.getInstance().getTime());
+//		apiStr += "&v=" + today;
+////		System.out.println(apiStr);
+//		long time = 0;
+//		int length = 0;
+//		try {
+//			URL url = new URL(apiStr);
+//			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+//			InputStream is = conn.getInputStream();
+//			BufferedReader br = new BufferedReader(new InputStreamReader(is));
+//			StringBuilder sb = new StringBuilder();
+//			String line;
+//			while((line = br.readLine()) != null){
+//				sb.append(line);
+//			}
+//			String jsonStr = sb.toString();
+//			jsonStr = jsonStr.replaceAll("(?<![\"}\\]\\d,(true)(false)]),\"", "\",\"");
+//			jsonStr = jsonStr.replaceAll("\",\",\"", "\",\"");
+////			System.out.println(jsonStr);
+//			JsonObject jobj= (JsonObject)jsonParser.parse(jsonStr);
+////			JsonReader reader = new JsonReader(new InputStreamReader(is));
+////			JsonObject jobj= jsonParser.parse(reader).getAsJsonObject();
+//			is.close();
+//			br.close();
+//			JsonObject tips = jobj.getAsJsonObject("response").getAsJsonObject("tips");
+//			if(tips != null){
+//				JsonArray bizReviews = tips.getAsJsonArray("items");
+////				System.out.println(bizReviews.size() + "\t reviews");
+//				for(JsonElement jElem : bizReviews){
+//					JsonObject robj = (JsonObject) jElem;
+////					String rStr = robj.get("text").toString().trim() + " @ via FourSquare";
+//					String rStr = robj.get("text").toString().trim();
+//					String rLink = robj.get("canonicalUrl").getAsString().trim();
+//					
+//					long start = System.currentTimeMillis();
+//					Review r = this.getFinder().process(rStr);//call NLP tools
+//					long end = System.currentTimeMillis();
+//					r.setWebLink(rLink);
+//					r.setDataSource(biz.getDataSource());//TODO: change hardcode 2?
+//					biz.getReviews().add(r);
+//					time += (end-start);
+//					length += rStr.length();
+////					System.out.println(biz.getReviews().size());
+//				}
+////				System.out.println(biz.getReviews().size());
+//			}
+////			
+//		} catch (MalformedURLException e) {
+//			e.printStackTrace();
+//			return biz;
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//			return biz;
+//		}
+//		long endTime = System.currentTimeMillis();
+////		System.out.println("---------------->");
+////		System.out.println("length of review:\t" + length);
+////		System.out.println("NER from API:\t" + time);
+////		System.out.println("fetch reviews from API:\t" + (endTime - startTime));
+//		return biz;
+//	}	
 	
 	/**
 	 * delete expired reviews; now 30 days
@@ -452,12 +487,13 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 		try {
 			long startTime = System.currentTimeMillis();
 			ps.setString(1, biz.getBusiness_id());
-			ps.setInt(2, 2);//data source TODO: hardcode?
+			ps.setInt(2, biz.getDataSource());//data source TODO: hardcode?
 			rs = ps.executeQuery();
 			while(rs.next()){
 				long start = System.currentTimeMillis();
-//				rStr = rs.getString("text");
-				rStr = rs.getString("text") + " (@ via FourSquare)";//subject to change
+				rStr = rs.getString("text");
+//				if(rs.getString("text").toLowerCase().indexOf("foursquare") == -1)
+//					rStr = rs.getString("text") + " (@ via FourSquare)";//subject to change
 //				System.out.println("--DB-----:\t" + rStr);
 				rLink = rs.getString("rLink");
 				NEStr = rs.getString("food");
@@ -486,20 +522,13 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 		}
 		return biz;
 	}
-	
-	public List<Business> addDBTableName(List<Business> bizs){
-		for(Business biz : bizs){
-			biz.setBusiness_id(this.dbTableName + "__" + biz.getBusiness_id());
-		}
-		return bizs;
-	}
 
 	public static int getNumBusiness() {
 		return numBusiness;
 	}
 
 	public static void setNumBusiness(int numBusiness) {
-		FourSquareInfoProcessor.numBusiness = numBusiness;
+		SearchEngineInfoProcessor.numBusiness = numBusiness;
 	}
 
 
@@ -565,9 +594,9 @@ public class FourSquareInfoProcessor extends DataSourceProcessor{
 			System.out.println("no property file input!!!");
 			System.exit(0);
 		}
-		FourSquareInfoProcessor processor = null;
+		SearchEngineInfoProcessor processor = null;
 		try {
-			processor = new FourSquareInfoProcessor(args[0]);
+			processor = new SearchEngineInfoProcessor(args[0]);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

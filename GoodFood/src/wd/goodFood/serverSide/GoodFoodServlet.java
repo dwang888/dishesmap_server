@@ -97,8 +97,8 @@ public class GoodFoodServlet extends HttpServlet {
 //        String jsonStr = this.processor.callProcessors(lat, lon);
 //        String jsonStr = this.processor.callProcessors(lat, lon, keywords);
         String jsonStr = this.processor.callProcessors(req);
-        String responseStr = callBackFunctionName + "(" + jsonStr + ");";//here we use jsonp to handle cross-domain issue
-        
+//        String responseStr = callBackFunctionName + "(" + jsonStr + ");";//here we use jsonp to handle cross-domain issue
+        String responseStr = jsonStr;//here we use jsonp to handle cross-domain issue
     	response.setContentType("text/javascript");
     	PrintWriter out = response.getWriter();
         response.setStatus(HttpServletResponse.SC_OK);
@@ -131,8 +131,8 @@ public class GoodFoodServlet extends HttpServlet {
         logger.info("Post;\t" + lat + "\t" + lon + "\t" + new Timestamp(System.currentTimeMillis()));
 //        String jsonStr = this.processor.callProcessors(lat, lon);
         String jsonStr = this.processor.callProcessors(req);
-        String responseStr = callBackFunctionName + "(" + jsonStr + ");";
-        
+//        String responseStr = callBackFunctionName + "(" + jsonStr + ");";
+        String responseStr = jsonStr;
     	response.setContentType("text/javascript");
     	PrintWriter out = response.getWriter();
         response.setStatus(HttpServletResponse.SC_OK);

@@ -17,6 +17,6 @@ public interface InfoProcessor{
 	
 //	public void clearHistoryData();
 
-	
+	public List<Business> addDBTableName(List<Business> bizs);
 	
 }

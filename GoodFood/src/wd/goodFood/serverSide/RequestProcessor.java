@@ -23,8 +23,9 @@ import wd.goodFood.utils.EntityProcessor;
 
 public class RequestProcessor {
 	private Configuration config;
-	CityGridInfoProcessor cityGridProcessor;
+//	CityGridInfoProcessor cityGridProcessor;
 	FourSquareInfoProcessor fourSquareInfoProcessor;
+//	SearchEngineInfoProcessor searchEngineInfoProcessor;
 //	GoogleInfoProcessor googleInfoProcessor;
 	Gson gson = new Gson();
 	
@@ -39,7 +40,9 @@ public class RequestProcessor {
 			businesses = new LinkedList<BusinessData>();
 			for(BusinessData biz : bizDatas){
 				for(FoodData food:biz.foods){
-					dishes.add(food);
+					if(food.reviews.size() > 3){//to eliminate food which has too few reviews
+						dishes.add(food);
+					}
 				}
 				biz.foods = null;//TODO: write specific method for this
 				businesses.add(biz);						
@@ -65,6 +68,7 @@ public class RequestProcessor {
 //		cityGridProcessor = new CityGridInfoProcessor(pathConfig, this.finder);
 		fourSquareInfoProcessor = new FourSquareInfoProcessor(pathConfig, this.finder);
 //		googleInfoProcessor = new GoogleInfoProcessor(pathConfig, this.finder);
+//		searchEngineInfoProcessor = new SearchEngineInfoProcessor(pathConfig, this.finder);
 	}
 
 //	@Deprecated
@@ -116,10 +120,14 @@ public class RequestProcessor {
 //		processors.add(this.cityGridProcessor);
 		processors.add(this.fourSquareInfoProcessor);
 //		processors.add(this.googleInfoProcessor);
+//		processors.add(this.searchEngineInfoProcessor);
+		
 		for(InfoProcessor processor : processors){
 			//call each processor to fetch info
 			List<Business> bizsTmp = processor.fetchPlaces(lat, lon);
-			bizMatrix.add(processor.fetchReviews(bizsTmp));
+			processor.fetchReviews(bizsTmp);			
+			processor.addDBTableName(bizsTmp);
+			bizMatrix.add(bizsTmp);
 		}
         
 		PostProcessor postProcessor = new PostProcessor();
@@ -171,6 +179,7 @@ public class RequestProcessor {
 			}
 			return jsonStr;
 		}		
+//		System.out.println(jsonStr);
 		return "{\"places\":" + jsonStr + "}"; 
 	}
 	
