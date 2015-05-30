@@ -67,9 +67,9 @@
         <Arg>
              <New class="org.apache.commons.dbcp.BasicDataSource">
                 <Set name="driverClassName">com.mysql.jdbc.Driver</Set>
-                <Set name="url">jdbc:mysql://192.241.173.181:3306/goodfoodDB</Set>
-                <Set name="username">lingandcs</Set>
-                <Set name="password">sduonline</Set>
+                <Set name="url">jdbc:mysql://0.0.0.0:3306/goodfoodDB</Set>
+                <Set name="username">lingxxxxx</Set>
+                <Set name="password">sduxxxx</Set>
                 <Set name="maxActive" type="int">1000</Set>
                 <Set name="maxIdle" type="int">30</Set>
                 <Set name="maxWait" type="int">10000</Set>
